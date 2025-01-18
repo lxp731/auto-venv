@@ -1,7 +1,7 @@
 ### Introduction
 
 A plugin for zsh to auto activate virtual environment. Applicable to uv, poetry.
-It will check current path if exist `.venv` folder. Determine whether to activate the virtual environment based on this folder.
+It will check current path if exist `.venv`or `venv` folder. Determine whether to activate the virtual environment based on this folder.
 
 
 ### Installation
