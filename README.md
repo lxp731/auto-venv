@@ -11,6 +11,7 @@ git clone https://github.com/lxp731/auto-venv.git "$ZSH_CUSTOM/plugins/auto-venv
 Then add this line to your `.zshrc`. Make sure it is before the line source `$ZSH/oh-my-zsh.sh`.
 ```bash
 plugins=(
+    ...
     auto-venv
 )
 ```
