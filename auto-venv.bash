@@ -32,3 +32,5 @@ auto_activate() {
     fi
   fi
 }
+
+PROMPT_COMMAND=auto_activate
