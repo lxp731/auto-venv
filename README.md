@@ -5,6 +5,9 @@ It will check current path if exist `.venv`or `venv` folder. Determine whether t
 
 
 ### Installation
+
+1. For oh-my-zsh:
+
 ```bash
 git clone https://github.com/lxp731/auto-venv.git "$ZSH_CUSTOM/plugins/auto-venv"
 ```
@@ -15,3 +18,6 @@ plugins=(
     auto-venv
 )
 ```
+
+2. For bash:
+
