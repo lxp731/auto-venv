@@ -30,5 +30,8 @@ wget https://raw.githubusercontent.com/lxp731/auto-venv/refs/heads/main/auto-ven
 Then add this line to your `.bashrc`, and source it.
 
 ```bash
-echo "source ~/.auto-venv.bash" >> ~/.bashrc && source ~/.bashrc
+echo "" >> ~/.bashrc && \
+echo "### auto-activate python virtual environment" >> ~/.bashrc && \
+echo "source ~/.auto-venv.bash" >> ~/.bashrc && \
+source ~/.bashrc
 ```
