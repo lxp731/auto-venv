@@ -19,12 +19,11 @@ auto_activate() {
 
   CURRENT_PATH="$NEW_PATH"
   local VENV_DIR=""
+  local project_root=""
 
-  # 检查缓存中是否存在
   if [[ -n "${VENV_CACHE[$NEW_PATH]}" ]]; then
     VENV_DIR="${VENV_CACHE[$NEW_PATH]}"
   else
-    # 缓存未命中，开始查找
     local dir="$NEW_PATH"
     local level=0
 
@@ -45,17 +44,27 @@ auto_activate() {
       ((level++))
     done
 
-    # 缓存结果
     VENV_CACHE[$NEW_PATH]="$VENV_DIR"
   fi
 
   if [[ -n "$VENV_DIR" ]]; then
-    if [[ -z "$ACTIVE_PROJECT_PATH" || "$NEW_PATH" != "$ACTIVE_PROJECT_PATH"* ]]; then
+    project_root="${VENV_DIR:h}"
+
+    # 安全检查：拒绝包含 .. 的路径
+    if [[ "$VENV_DIR" == *..* ]]; then
+      echo "auto-venv: suspicious virtualenv path detected, activation cancelled" >&2
+      return
+    fi
+
+    # 判断是否进入了一个新项目
+    # 使用前缀删除来判断 NEW_PATH 是否在 ACTIVE_PROJECT_PATH 下，避免 glob 误匹配
+    if [[ -z "$ACTIVE_PROJECT_PATH" ]] \
+      || [[ "$NEW_PATH" != "$ACTIVE_PROJECT_PATH" && "${NEW_PATH#$ACTIVE_PROJECT_PATH/}" == "$NEW_PATH" ]]; then
       if [[ -n "$VIRTUAL_ENV" ]]; then
         deactivate
       fi
       source "$VENV_DIR/bin/activate"
-      ACTIVE_PROJECT_PATH="$dir"
+      ACTIVE_PROJECT_PATH="$project_root"
     fi
   else
     if [[ -n "$VIRTUAL_ENV" ]]; then

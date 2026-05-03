@@ -59,12 +59,22 @@ auto_activate_venv() {
   fi
 
   if [[ -n "$VENV_DIR" ]]; then
-    if [[ -z "$ACTIVE_PROJECT_PATH" || "$NEW_PATH" != "$ACTIVE_PROJECT_PATH"* ]]; then
+    local project_root
+    project_root=$(dirname "$VENV_DIR")
+
+    # 安全检查：拒绝包含 .. 的路径
+    if [[ "$VENV_DIR" == *..* ]]; then
+      echo "auto-venv: suspicious virtualenv path detected, activation cancelled" >&2
+      return
+    fi
+
+    if [[ -z "$ACTIVE_PROJECT_PATH" ]] \
+      || [[ "$NEW_PATH" != "$ACTIVE_PROJECT_PATH" && "${NEW_PATH#$ACTIVE_PROJECT_PATH/}" == "$NEW_PATH" ]]; then
       if [[ -n "$VIRTUAL_ENV" ]]; then
         deactivate
       fi
       source "$VENV_DIR/bin/activate"
-      ACTIVE_PROJECT_PATH="$dir"
+      ACTIVE_PROJECT_PATH="$project_root"
     fi
   else
     if [[ -n "$VIRTUAL_ENV" ]]; then
