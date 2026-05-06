@@ -73,6 +73,17 @@ auto_activate_venv() {
       if [[ -n "$VIRTUAL_ENV" ]]; then
         deactivate
       fi
+      if [[ ! -f "$VENV_DIR/bin/activate" ]]; then
+        echo "auto-venv: $VENV_DIR/bin/activate not found — venv may have been deleted" >&2
+        echo "auto-venv: recreate with: uv venv" >&2
+        # 清除过期缓存
+        if [[ -n "${VENV_CACHE[$NEW_PATH]+_}" ]]; then
+          VENV_CACHE["$NEW_PATH"]=""
+        elif [[ -n "$VENV_CACHE_SIMULATED" ]]; then
+          eval "VENV_CACHE_$NEW_PATH"='""'
+        fi
+        return
+      fi
       source "$VENV_DIR/bin/activate"
       ACTIVE_PROJECT_PATH="$project_root"
     fi

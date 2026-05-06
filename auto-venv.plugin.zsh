@@ -21,9 +21,13 @@ auto_activate() {
   local VENV_DIR=""
   local project_root=""
 
+  # 1. 尝试从缓存获取
   if [[ -n "${VENV_CACHE[$NEW_PATH]}" ]]; then
     VENV_DIR="${VENV_CACHE[$NEW_PATH]}"
-  else
+  fi
+
+  # 2. 缓存未命中 → 重新扫描
+  if [[ -z "$VENV_DIR" ]]; then
     local dir="$NEW_PATH"
     local level=0
 
@@ -62,6 +66,12 @@ auto_activate() {
       || [[ "$NEW_PATH" != "$ACTIVE_PROJECT_PATH" && "${NEW_PATH#$ACTIVE_PROJECT_PATH/}" == "$NEW_PATH" ]]; then
       if [[ -n "$VIRTUAL_ENV" ]]; then
         deactivate
+      fi
+      if [[ ! -f "$VENV_DIR/bin/activate" ]]; then
+        echo "auto-venv: $VENV_DIR/bin/activate not found — venv may have been deleted" >&2
+        echo "auto-venv: recreate with: uv venv" >&2
+        VENV_CACHE[$NEW_PATH]=""
+        return
       fi
       source "$VENV_DIR/bin/activate"
       ACTIVE_PROJECT_PATH="$project_root"
